@@ -6,6 +6,7 @@ public class BodySourceView : MonoBehaviour
 {
     public GameObject BodySourceManager;
     public Transform parentTransform;
+    public bool RenderKinectBody = true;
 
     private Material jointMaterial, boneMaterial;
     
@@ -13,6 +14,7 @@ public class BodySourceView : MonoBehaviour
     private BodySourceManager _BodyManager;
 
     private Vector3 _HeadPosition = new Vector3();
+    private int _NumBodies = 1;
 
     private const string JOINT_ID_FORMAT = "joint:{0}";
     private const string BONE_ID_FORMAT = "bone:{0}-{1}";
@@ -55,7 +57,7 @@ public class BodySourceView : MonoBehaviour
         boneMaterial = Resources.Load("Materials/boneMaterial") as Material;
     }
 
-    void Update () 
+    void Update() 
     {
         if (BodySourceManager == null)
         {
@@ -84,7 +86,7 @@ public class BodySourceView : MonoBehaviour
                 
             if(body.IsTracked)
             {
-                trackedIds.Add (body.TrackingId);
+                trackedIds.Add(body.TrackingId);
             }
         }
         
@@ -100,6 +102,7 @@ public class BodySourceView : MonoBehaviour
             }
         }
 
+        int trackedBodyIndex = 0;
         foreach(var body in data)
         {
             if (body == null)
@@ -114,7 +117,9 @@ public class BodySourceView : MonoBehaviour
                     _Bodies[body.TrackingId] = CreateBodyObject(body, body.TrackingId);
                 }
                 RefreshBodyObject(body, _Bodies[body.TrackingId]);
+                trackedBodyIndex++;
             }
+            if (trackedBodyIndex >= _NumBodies) break;
         }
     }
 
@@ -132,7 +137,10 @@ public class BodySourceView : MonoBehaviour
         GameObject ob = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
         // always render on top
-        //ob.layer = LayerMask.NameToLayer("KinectBody");
+        if (!RenderKinectBody)
+        {
+            ob.layer = LayerMask.NameToLayer("DontRender");
+        }
         ob.GetComponent<Renderer>().material = jointMaterial;
 
         return ob;
@@ -143,17 +151,16 @@ public class BodySourceView : MonoBehaviour
         // special cylinder instantiated between two points
         GameObject ob = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
 
-        if (ob.GetComponent<Collider>() != null)
-            Destroy(ob.GetComponent<Collider>());
-
-        // fake (but clever) 2d physics
         GameObject child = new GameObject("collider", typeof(CapsuleCollider));
         child.transform.SetParent(ob.transform);
 
         ob = UpdateBone(ob, source, dest);
 
         // always render on top
-        //ob.layer = LayerMask.NameToLayer("KinectBody");
+        if (!RenderKinectBody)
+        {
+            ob.layer = LayerMask.NameToLayer("DontRender");
+        }
         ob.GetComponent<Renderer>().material = boneMaterial;
 
         return ob;
@@ -184,7 +191,7 @@ public class BodySourceView : MonoBehaviour
     private GameObject CreateBodyObject(Kinect.Body body, ulong id)
     {
         GameObject bodyObj = new GameObject("body:" + id);
-        bodyObj.transform.SetParent(parentTransform);
+        bodyObj.transform.SetParent(parentTransform, false);
 
         for (Kinect.JointType jt = Kinect.JointType.SpineBase; jt <= Kinect.JointType.ThumbRight; jt++)
         {
