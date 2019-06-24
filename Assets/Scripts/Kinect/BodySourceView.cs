@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Kinect = Windows.Kinect;
+using System;
 
 public class BodySourceView : MonoBehaviour 
 {
     public GameObject BodySourceManager;
-    public Transform parentTransform;
+    public Transform ParentTransform;
     public bool RenderKinectBody = true;
 
     private Material jointMaterial, boneMaterial;
@@ -18,6 +19,9 @@ public class BodySourceView : MonoBehaviour
 
     private const string JOINT_ID_FORMAT = "joint:{0}";
     private const string BONE_ID_FORMAT = "bone:{0}-{1}";
+
+    public event Action OnBodyFound;
+    public event Action OnBodyLost;
 
     private Dictionary<Kinect.JointType, Kinect.JointType> _BoneMap = new Dictionary<Kinect.JointType, Kinect.JointType>()
     {
@@ -54,7 +58,7 @@ public class BodySourceView : MonoBehaviour
     void Start()
     {
         jointMaterial = Resources.Load("Materials/JointMaterial") as Material;
-        boneMaterial = Resources.Load("Materials/boneMaterial") as Material;
+        boneMaterial = Resources.Load("Materials/BoneMaterial") as Material;
     }
 
     void Update() 
@@ -97,8 +101,10 @@ public class BodySourceView : MonoBehaviour
         {
             if(!trackedIds.Contains(trackingId))
             {
+                // tracked body lost
                 Destroy(_Bodies[trackingId]);
                 _Bodies.Remove(trackingId);
+                OnBodyLost?.Invoke();
             }
         }
 
@@ -114,7 +120,9 @@ public class BodySourceView : MonoBehaviour
             {
                 if(!_Bodies.ContainsKey(body.TrackingId))
                 {
+                    // new body found
                     _Bodies[body.TrackingId] = CreateBodyObject(body, body.TrackingId);
+                    OnBodyFound?.Invoke();
                 }
                 RefreshBodyObject(body, _Bodies[body.TrackingId]);
                 trackedBodyIndex++;
@@ -191,7 +199,7 @@ public class BodySourceView : MonoBehaviour
     private GameObject CreateBodyObject(Kinect.Body body, ulong id)
     {
         GameObject bodyObj = new GameObject("body:" + id);
-        bodyObj.transform.SetParent(parentTransform, false);
+        bodyObj.transform.SetParent(ParentTransform, false);
 
         for (Kinect.JointType jt = Kinect.JointType.SpineBase; jt <= Kinect.JointType.ThumbRight; jt++)
         {
@@ -265,7 +273,8 @@ public class BodySourceView : MonoBehaviour
     
     public Vector3 GetVector3FromJoint(Kinect.Joint joint)
     {
-        return new Vector3(joint.Position.X * 10, joint.Position.Y * 10, joint.Position.Z * 10);
+        //return new Vector3(joint.Position.X * 10, joint.Position.Y * 10, joint.Position.Z * 10);
+        return new Vector3(joint.Position.X, joint.Position.Y, joint.Position.Z);
     }
 
     public Vector3 GetHeadPosition()

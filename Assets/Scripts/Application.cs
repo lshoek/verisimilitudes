@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class Application : MonoBehaviour
 {
@@ -6,6 +7,7 @@ public class Application : MonoBehaviour
 
     private Transform _Actor;
     private BodySourceView _KinectBody;
+    private Text _DebugTextBox;
 
     void Awake()
     {
@@ -16,11 +18,15 @@ public class Application : MonoBehaviour
     {
         _Actor = GameObject.FindGameObjectWithTag("Actor").transform;
         _KinectBody = FindObjectOfType<BodySourceView>();
+        _KinectBody.OnBodyFound += ActivateSequence;
+        _KinectBody.OnBodyLost += DeactivateSequence;
 
         if (_KinectBody == null)
         {
             Debug.Log("Could not find BodySourceView object in scene");
         }
+
+        _DebugTextBox = GameObject.FindGameObjectWithTag("DebugTextBox").GetComponent<Text>();
     }
 
     void Update()
@@ -31,5 +37,20 @@ public class Application : MonoBehaviour
             headPosition.x *= -1f;
             _Actor.position = (headPosition != Vector3.zero) ? headPosition : _Actor.position;
         }
+    }
+
+    void ActivateSequence()
+    {
+        Debug.Log("TRACKED");
+    }
+
+    void DeactivateSequence()
+    {
+        Debug.Log("UNTRACKED");
+    }
+
+    public void WriteDebug(string msg)
+    {
+        _DebugTextBox.text = msg;
     }
 }
