@@ -8,8 +8,9 @@ public class Application : MonoBehaviour
     public bool EnableStencilMask = true;
     public bool EnableShutters = true;
     public bool EnableDebugging = true;
+    public bool EnableAutoEffects = true;
 
-    [Range(0, 10f)] public float Value = 1f;
+    [Range(0, 5)] public int ShaderIndex = 0;
     [Range(2f, 100f)] public float Density = 30f;
 
     public Transform CalibrationSubject;
@@ -21,8 +22,17 @@ public class Application : MonoBehaviour
     private Shutter[] _Shutters;
     private Renderer[] _ScanObjects;
 
-    private Text _DebugTextBox;
+    private float _ShaderIndexInterval = 3f;
+    private float _NextIndexTime = 3f;
+    private float _ShaderEffectLifeTime = 5f;
+    private int _TempShaderIndex = 0;
 
+    private bool _JitterMode = false;
+    private bool _Jittering = false;
+    private float _JitterLifeTime = 5f;
+    private float _JitterInterval = 0.125f;
+
+    private Text _DebugTextBox;
     private float _DebugDelta = 0.001f;
     private bool _DebugToggle = false;
 
@@ -96,36 +106,71 @@ public class Application : MonoBehaviour
 
             if (Input.GetKey(KeyCode.D)) { CalibrationSubject.localScale += new Vector3(_DebugDelta, 0, 0); }
             if (Input.GetKey(KeyCode.A)) { CalibrationSubject.localScale -= new Vector3(_DebugDelta, 0, 0); }
-            if (Input.GetKey(KeyCode.W)) { CalibrationSubject.localScale += new Vector3(0, 0, _DebugDelta); }
-            if (Input.GetKey(KeyCode.S)) { CalibrationSubject.localScale -= new Vector3(0, 0, _DebugDelta); }
+            if (Input.GetKey(KeyCode.W)) { CalibrationSubject.localScale += new Vector3(0, _DebugDelta, 0); }
+            if (Input.GetKey(KeyCode.S)) { CalibrationSubject.localScale -= new Vector3(0, _DebugDelta, 0); }
 
             if (Input.GetMouseButtonDown(0))
             {
                 float scale = Input.mousePosition.x / Screen.width * 100.0f;
             }
-            WriteDebug(TransformToString(CalibrationSubject) + "delta:" + _DebugDelta);
+            WriteDebug(TransformToString(CalibrationSubject) + 
+                "delta:" + _DebugDelta + 
+                "\n elapsedTime:" + Time.time +
+                "\n shaderIndex:" + ShaderIndex);
         }
     }
 
     void ManipulateScanObjects()
     {
+        float elapsedTime = Time.time;
+
+        if (EnableAutoEffects)
+        {
+            if (elapsedTime > _NextIndexTime)
+            {
+                _TempShaderIndex = Random.Range(1, 5 + 1);
+                _ShaderEffectLifeTime = elapsedTime + Random.Range(1.0f, 5f);
+                _ShaderIndexInterval = Random.Range(10f, 15f); //15f, 35f
+                _NextIndexTime = elapsedTime + _ShaderIndexInterval;
+                if (Random.Range(0f, 1f) > 0.0f) _JitterMode = true; //feuibfghuebfg
+            }
+            if (_JitterMode)
+            {
+                _JitterLifeTime = elapsedTime + Random.Range(0.5f, 2.5f);
+                _Jittering = true;
+                _JitterMode = false;
+            }
+            if (_Jittering)
+            {
+                ShaderIndex = ((elapsedTime % _JitterInterval) > _JitterInterval / 2) ? 0 : _TempShaderIndex;
+                if (elapsedTime > _JitterLifeTime)
+                {
+                    _Jittering = false;
+                }
+            }
+            else ShaderIndex = _TempShaderIndex;
+            if (elapsedTime > _ShaderEffectLifeTime)
+            {
+                ShaderIndex = 0;
+            }
+        }
+        Density = 1f + Mathf.Sin(elapsedTime/10f) * 30f;
         foreach (Renderer r in _ScanObjects)
         {
-            r.material.SetFloat("_Value", Value);
+            r.material.SetFloat("_Index", ShaderIndex);
             r.material.SetFloat("_Density", Density);
         }
     }
 
     void ActivateSequence()
     {
-        Debug.Log("TRACKED");
-        foreach (Shutter shutter in _Shutters) shutter.Fade(1f, 0f, 2f);
+        foreach (Shutter shutter in _Shutters) shutter.FadeTo(0f, 1f);
     }
 
     void DeactivateSequence()
     {
-        Debug.Log("UNTRACKED");
-        foreach (Shutter shutter in _Shutters) shutter.Fade(0f, 1f, 2f);
+        Debug.Log("DEAC");
+        foreach (Shutter shutter in _Shutters) shutter.FadeTo(1f, 1f);
     }
 
     static string TransformToString(Transform t)

@@ -28,7 +28,7 @@ Shader "Custom/Mix"
 			uniform sampler2D _Layer1;
 			uniform sampler2D _Layer2;
 
-				struct v2f
+			struct v2f
 			{
 				float4 pos : SV_POSITION;
 				half2 uv : TEXCOORD0;

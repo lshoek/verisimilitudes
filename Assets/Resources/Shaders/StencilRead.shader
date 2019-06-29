@@ -8,7 +8,7 @@ Shader "Custom/StencilRead" {
 		[HDR] _Emission ("Emission", color) = (0,0,0)
 		[IntRange] _StencilRef ("Stencil Reference Value", Range(0,255)) = 0
 		
-		_Value ("Value", Float) = 1.0
+		_Index ("Index", Int) = 0
 		_Density ("Density", Range(2,100)) = 30
 	}
 	SubShader {
@@ -21,9 +21,9 @@ Shader "Custom/StencilRead" {
 		}
 
 		CGPROGRAM
-
 		#pragma surface surf Standard
 		#pragma target 3.0
+		#define inv(i) (1.0 - i)
 
 		sampler2D _MainTex;
 		fixed4 _Color;
@@ -32,8 +32,8 @@ Shader "Custom/StencilRead" {
 		half _Metallic;
 		half3 _Emission;
 
-		float _Value;
 		float _Density;
+		int _Index;
 
 		struct Input 
 		{
@@ -54,8 +54,27 @@ Shader "Custom/StencilRead" {
             float checker = frac(c.x + c.y) * 2;
             
             // either combine or view exclusively
-            col.rgb = lerp(col, normCol, checker).rgb;
-			col.rgb = lerp(fixed3(1,1,1), fixed3(1,0,1), checker).rgb;
+
+            if (_Index == 1)
+            {
+            	col.rgb = lerp(col, normCol, checker).rgb;
+            }
+            else if (_Index == 2)
+            {
+				col.rgb = lerp(fixed3(1,1,1), fixed3(1,0,1), checker).rgb;
+            }
+        	else if (_Index == 3)
+        	{
+				col.rgb = lerp(fixed3(1,1,1), fixed3(0,0,0), checker).rgb;
+        	}
+    		else if (_Index == 4)
+    		{
+				col.rgb = fixed3(inv(col.r), inv(col.g), inv(col.b));
+    		}
+    		else if (_Index == 5)
+    		{
+    			col.rgb = normCol.rgb;
+    		}
 
 			o.Albedo = col.rgb;
 			o.Metallic = _Metallic;

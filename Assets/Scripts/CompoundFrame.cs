@@ -12,7 +12,7 @@ public class CompoundFrame : MonoBehaviour
         for (int i = 0; i < _LayerCams.Length; i++)
         {
             if (i == 0) continue;
-            _LayerCams[i].targetTexture = new RenderTexture(Screen.width, Screen.height, 8, RenderTextureFormat.ARGB32);
+            _LayerCams[i].targetTexture = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.ARGB32);
         }
         _MixMaterial = new Material(Resources.Load("Shaders/Mix") as Shader);
     }
