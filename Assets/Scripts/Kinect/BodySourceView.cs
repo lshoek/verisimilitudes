@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Kinect = Windows.Kinect;
 using System;
+using Windows.Kinect;
 
 public class BodySourceView : MonoBehaviour 
 {
@@ -9,11 +10,13 @@ public class BodySourceView : MonoBehaviour
 
     public Transform ParentTransform;
     public bool RenderKinectBody = true;
+    public bool InvertX = false;
 
     private Material jointMaterial, boneMaterial;
     
     private Dictionary<ulong, GameObject> _Bodies = new Dictionary<ulong, GameObject>();
     private BodySourceManager _BodyManager;
+    private CameraSpacePoint[] _FilteredJoints;
 
     private Vector3 _HeadPosition = new Vector3();
     private int _NumBodies = 1;
@@ -24,10 +27,15 @@ public class BodySourceView : MonoBehaviour
     public event Action OnBodyFound;
     public event Action OnBodyLost;
 
+    KinectJointFilter filter;
+
     void Start()
     {
         jointMaterial = Resources.Load("Materials/JointMaterial") as Material;
         boneMaterial = Resources.Load("Materials/BoneMaterial") as Material;
+
+        filter = new KinectJointFilter();
+        filter.Init();
     }
 
     void Update() 
@@ -94,6 +102,11 @@ public class BodySourceView : MonoBehaviour
                     OnBodyFound?.Invoke();
                 }
                 RefreshBodyObject(body, _Bodies[body.TrackingId]);
+
+                filter.UpdateFilter(body);
+                CameraSpacePoint c = filter.GetFilteredJoint(JointType.Head);
+                //_HeadPosition = new Vector3(c.X, c.Y, c.Z);
+
                 trackedBodyIndex++;
             }
             if (trackedBodyIndex >= _NumBodies) break;
@@ -121,7 +134,7 @@ public class BodySourceView : MonoBehaviour
         jointObj.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
         jointObj.name = string.Format(JOINT_ID_FORMAT, jt.ToString());
         jointObj.transform.SetParent(bodyObj.transform);
-
+        
         return bodyObj;
     }
     
@@ -140,7 +153,7 @@ public class BodySourceView : MonoBehaviour
     
     public Vector3 GetVector3FromJoint(Kinect.Joint joint)
     {
-        return new Vector3(joint.Position.X*-1f, joint.Position.Y, joint.Position.Z);
+        return new Vector3(joint.Position.X*(InvertX?-1f:1f), joint.Position.Y, joint.Position.Z);
     }
 
     public Vector3 GetHeadPosition()

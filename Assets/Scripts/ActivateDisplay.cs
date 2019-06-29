@@ -8,7 +8,8 @@ public class ActivateDisplay : MonoBehaviour
 
     void Start()
     {
-        Screen.fullScreen = true;
+        Screen.SetResolution(1280, 720, true);
+
         if (!UseSingleDisplay)
         {
             // activate second display (projector) if available
