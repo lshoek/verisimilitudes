@@ -1446,7 +1446,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 5000
   field of view: 66.64897
   orthographic: 0
@@ -1942,7 +1942,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 770714859}
-  m_LocalRotation: {x: -0.004073482, y: 0.98620903, z: 0.16362262, w: 0.024552258}
+  m_LocalRotation: {x: 0.0010094153, y: 0.9914174, z: 0.13050576, w: -0.0076682577}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1989,9 +1989,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 5000
-  field of view: 63.05269
+  field of view: 66.00257
   orthographic: 0
   orthographic size: 5
   m_Depth: -2
@@ -3849,7 +3849,7 @@ MonoBehaviour:
   EnableAutoEffects: 1
   ShaderIndex: 0
   Density: 30
-  CalibrationSubject: {fileID: 900655249}
+  CalibrationSubject: {fileID: 2139578795}
 --- !u!1 &1646072478
 GameObject:
   m_ObjectHideFlags: 0
@@ -4064,7 +4064,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1803041032}
-  m_LocalRotation: {x: -0.00006788827, y: 0.99583465, z: 0.09117517, w: 0.0007414902}
+  m_LocalRotation: {x: 0.0023005249, y: 0.99656343, z: 0.077308536, w: -0.029655442}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -4111,9 +4111,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 5000
-  field of view: 65.203316
+  field of view: 66.36732
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -4950,7 +4950,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2139578794}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.055, y: 0.513, z: -0.616}
+  m_LocalPosition: {x: 0.08, y: 0.513, z: -0.616}
   m_LocalScale: {x: 4.342, y: 1.779, z: -1}
   m_Children:
   - {fileID: 913102481}
