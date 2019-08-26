@@ -9,6 +9,7 @@ TagManager:
   - Canvas
   - ScanTransform
   - StencilMask
+  - WindowSize
   layers:
   - Default
   - TransparentFX

@@ -36,6 +36,8 @@ public class Application : MonoBehaviour
     private float _DebugDelta = 0.001f;
     private bool _DebugToggle = false;
 
+    private WindowTransformIO _WindowTransformIO;
+
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -58,6 +60,7 @@ public class Application : MonoBehaviour
         _DebugTextBox = GameObject.FindGameObjectWithTag("DebugTextBox").GetComponent<Text>();
         _ScanTransform = GameObject.FindGameObjectWithTag("ScanTransform").GetComponent<Transform>();
         _ScanObjects = _ScanTransform.GetComponentsInChildren<Renderer>();
+        _WindowTransformIO = GetComponent<WindowTransformIO>();
 
         if (EnableStencilMask)
         {
@@ -108,6 +111,10 @@ public class Application : MonoBehaviour
             if (Input.GetKey(KeyCode.A)) { CalibrationSubject.localScale -= new Vector3(_DebugDelta, 0, 0); }
             if (Input.GetKey(KeyCode.W)) { CalibrationSubject.localScale += new Vector3(0, _DebugDelta, 0); }
             if (Input.GetKey(KeyCode.S)) { CalibrationSubject.localScale -= new Vector3(0, _DebugDelta, 0); }
+
+            // Utils
+            if (Input.GetKeyDown(KeyCode.F1)) { _WindowTransformIO.Save(); }
+            if (Input.GetKeyDown(KeyCode.F2)) { _WindowTransformIO.Load(); }
 
             if (Input.GetMouseButtonDown(0))
             {
