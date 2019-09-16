@@ -1,14 +1,19 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// Force the use of a second display and set custom resolution
+/// </summary>
 [RequireComponent(typeof(Camera))]
 public class ActivateDisplay : MonoBehaviour
 {
     public bool UseSingleDisplay = false;
+    public int Width = 1280;
+    public int Height = 720;
 
     void Start()
     {
-        Screen.SetResolution(1280, 720, true);
+        Screen.SetResolution(Width, Height, true);
 
         if (!UseSingleDisplay)
         {
@@ -29,7 +34,7 @@ public class ActivateDisplay : MonoBehaviour
     IEnumerator WaitForApp()
     {
         yield return new WaitForSeconds(1f);
-        Application.Instance.WriteDebug("Displays connected: " + Display.displays.Length);
+        Application.Instance.AppendMessage("Displays connected: " + Display.displays.Length);
         yield return null;
     }
 }
