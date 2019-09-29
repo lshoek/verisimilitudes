@@ -6,14 +6,13 @@ using Windows.Kinect;
 
 public class BodySourceView : MonoBehaviour 
 {
-    public GameObject BodySourceManager;
-
     public Transform ParentTransform;
     public bool RenderKinectBody = true;
     public bool InvertX = false;
 
     private Material jointMaterial, boneMaterial;
-    
+
+    private Body trackedBody;
     private Dictionary<ulong, GameObject> _Bodies = new Dictionary<ulong, GameObject>();
     private BodySourceManager _BodyManager;
     private CameraSpacePoint[] _FilteredJoints;
@@ -31,6 +30,8 @@ public class BodySourceView : MonoBehaviour
 
     void Start()
     {
+        _BodyManager = FindObjectOfType<BodySourceManager>();
+
         jointMaterial = Resources.Load("Materials/JointMaterial") as Material;
         boneMaterial = Resources.Load("Materials/BoneMaterial") as Material;
 
@@ -40,16 +41,7 @@ public class BodySourceView : MonoBehaviour
 
     void Update() 
     {
-        if (BodySourceManager == null)
-        {
-            return;
-        }
-        
-        _BodyManager = BodySourceManager.GetComponent<BodySourceManager>();
-        if (_BodyManager == null)
-        {
-            return;
-        }
+        if (_BodyManager == null) return;
         
         Kinect.Body[] data = _BodyManager.GetData();
         if (data == null)
@@ -68,6 +60,8 @@ public class BodySourceView : MonoBehaviour
             if(body.IsTracked)
             {
                 trackedIds.Add(body.TrackingId);
+                if (trackedBody == null)
+                    trackedBody = body;
             }
         }
         
@@ -85,7 +79,31 @@ public class BodySourceView : MonoBehaviour
             }
         }
 
-        int trackedBodyIndex = 0;
+        //check if the trackedbody is still in sight
+        foreach (var body in data)
+        {
+            if (body == null)
+            {
+                continue;
+            }
+
+            if (body.IsTracked)
+            {
+                if (body.TrackingId == trackedBody.TrackingId)
+                {
+                    if (_Bodies.ContainsKey(body.TrackingId))
+                    {
+                        RefreshBodyObject(body, _Bodies[body.TrackingId]);
+
+                        filter.UpdateFilter(body);
+                        CameraSpacePoint c = filter.GetFilteredJoint(JointType.Head);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // find a new body
         foreach(var body in data)
         {
             if (body == null)
@@ -95,7 +113,11 @@ public class BodySourceView : MonoBehaviour
             
             if(body.IsTracked)
             {
-                if(!_Bodies.ContainsKey(body.TrackingId))
+                float zHead = body.Joints[JointType.Head].Position.Z;
+                Debug.Log(zHead);
+                if (zHead > 4.5f) return;
+
+                if (!_Bodies.ContainsKey(body.TrackingId))
                 {
                     // new body found
                     _Bodies[body.TrackingId] = CreateBodyObject(body, body.TrackingId);
@@ -107,10 +129,10 @@ public class BodySourceView : MonoBehaviour
                 CameraSpacePoint c = filter.GetFilteredJoint(JointType.Head);
                 //_HeadPosition = new Vector3(c.X, c.Y, c.Z);
 
-                trackedBodyIndex++;
+                return;
             }
-            if (trackedBodyIndex >= _NumBodies) break;
         }
+        //Debug.Log("No body found");
     }
 
     private GameObject ConstructJoint()

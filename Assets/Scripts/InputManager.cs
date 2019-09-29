@@ -42,7 +42,7 @@ public class InputManager : MonoBehaviour
         }, 
         "x: toggle stepsize", true));
 
-        keyActions.Add(new KeyActionPair(KeyCode.I, () => subjectIndex = (subjectIndex+1)%CalibrationSubjects.Length, "i: toggle obj index", false));
+        keyActions.Add(new KeyActionPair(KeyCode.I, () => subjectIndex = (subjectIndex+1)%CalibrationSubjects.Length, "i: toggle obj index", true));
         keyActions.Add(new KeyActionPair(KeyCode.UpArrow, () => CalibrationSubjects[subjectIndex].position += new Vector3(0, _DebugDelta, 0), "up: move obj up"));
         keyActions.Add(new KeyActionPair(KeyCode.DownArrow, () => CalibrationSubjects[subjectIndex].position -= new Vector3(0, _DebugDelta, 0), "down: move obj down"));
         keyActions.Add(new KeyActionPair(KeyCode.LeftArrow, () => CalibrationSubjects[subjectIndex].position += new Vector3(_DebugDelta, 0, 0), "left: move obj left"));

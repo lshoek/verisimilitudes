@@ -29,6 +29,7 @@ public class WindowTransformIO : MonoBehaviour
 
     public void Load()
     {
+        Debug.Log(UnityEngine.Application.persistentDataPath);
         for (int i = 0; i < windowSizes.Length; i++)
         {
             string fullPath = Path.Combine(UnityEngine.Application.persistentDataPath, FolderName, $"{FileName}_L{i + 1}{Extension}");

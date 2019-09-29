@@ -12,7 +12,7 @@ Shader "Custom/StencilRead" {
 		_Density ("Density", Range(2,100)) = 30
 	}
 	SubShader {
-		Tags{ "RenderType"="Opaque" "Queue"="Geometry"}
+		Tags{ "RenderType"="Transparent" "Queue"="Geometry"}
 
         //stencil operation
 		Stencil{
@@ -21,8 +21,10 @@ Shader "Custom/StencilRead" {
 		}
 
 		CGPROGRAM
+        #pragma target 3.0 
 		#pragma surface surf Standard
-		#pragma target 3.0
+		#pragma alpha:fade
+		
 		#define inv(i) (1.0 - i)
 
 		sampler2D _MainTex;
@@ -44,8 +46,8 @@ Shader "Custom/StencilRead" {
 
 		void surf (Input i, inout SurfaceOutputStandard o) 
 		{
-			fixed3 col = tex2D(_MainTex, i.uv_MainTex).rgb;
-			col *= _Color.rgb;
+			fixed4 col = tex2D(_MainTex, i.uv_MainTex);
+			col.rgb *= _Color.rgb;
 
 			fixed3 normCol = i.worldNormal*0.5+0.5;
 
@@ -77,6 +79,7 @@ Shader "Custom/StencilRead" {
     		}
 
 			o.Albedo = col.rgb;
+			o.Alpha = col.a;
 			o.Metallic = _Metallic;
 			o.Smoothness = _Smoothness;
 			o.Emission = _Emission;

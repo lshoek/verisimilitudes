@@ -37,7 +37,6 @@ public class SceneManager : MonoBehaviour
         }
 
         _Shutters = FindObjectsOfType<Shutter>();
-
         _ScanTransform = GameObject.FindGameObjectWithTag("ScanTransform").GetComponent<Transform>();
         _ScanObjects = _ScanTransform.GetComponentsInChildren<Renderer>();
 
@@ -67,6 +66,7 @@ public class SceneManager : MonoBehaviour
             Vector3 headPosition = _KinectBody.GetHeadPosition();
             _Actor.position = (headPosition != Vector3.zero) ? headPosition : _Actor.position;
         }
+        ManipulateScanObjects();
     }
 
     private void ManipulateScanObjects()

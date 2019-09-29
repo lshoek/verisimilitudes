@@ -26,7 +26,7 @@ public class Application : MonoBehaviour
         staticMessageRect = new Rect(16, Screen.height/2, Screen.width / 2, Screen.height / 2);
 
         debugMessageStyle = new GUIStyle();
-        debugMessageStyle.fontSize = 24;
+        debugMessageStyle.fontSize = 20;
         debugMessageStyle.normal.textColor = Color.white;
         debugMessageStyle.font = Resources.Load("Fonts/Anonymous-Pro-B") as Font;
     }
