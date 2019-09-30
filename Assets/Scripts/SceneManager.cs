@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SceneManager : MonoBehaviour
 {
@@ -36,7 +34,6 @@ public class SceneManager : MonoBehaviour
             Debug.Log("Could not find BodySourceView object in scene");
         }
 
-        _Shutters = FindObjectsOfType<Shutter>();
         _ScanTransform = GameObject.FindGameObjectWithTag("ScanTransform").GetComponent<Transform>();
         _ScanObjects = _ScanTransform.GetComponentsInChildren<Renderer>();
 
@@ -55,6 +52,19 @@ public class SceneManager : MonoBehaviour
                 Renderer r = ob.GetComponent<Renderer>();
                 r.material = new Material(Resources.Load("Shaders/StencilWrite") as Shader);
                 r.material.SetInt("_StencilRef", 1);
+
+                if (Application.Instance.EnableShutters)
+                {
+                    GameObject shutter = Instantiate(Resources.Load("Prefabs/Shutter"), ob.transform) as GameObject;
+                    shutter.name = "Shutter";
+
+                    foreach (Transform child in shutter.GetComponentsInChildren<Transform>())
+                        child.gameObject.layer = ob.layer;
+                }
+            }
+            if (Application.Instance.EnableShutters)
+            {
+                _Shutters = FindObjectsOfType<Shutter>();
             }
         }
     }
@@ -113,11 +123,13 @@ public class SceneManager : MonoBehaviour
 
     private void ActivateSequence()
     {
-        foreach (Shutter shutter in _Shutters) shutter.FadeTo(0f, 1f);
+        if (Application.Instance.EnableShutters)
+            foreach (Shutter shutter in _Shutters) shutter.FadeTo(0f, 1f);
     }
 
     private void DeactivateSequence()
     {
-        foreach (Shutter shutter in _Shutters) shutter.FadeTo(1f, 1f);
+        if (Application.Instance.EnableShutters)
+            foreach (Shutter shutter in _Shutters) shutter.FadeTo(1f, 1f);
     }
 }

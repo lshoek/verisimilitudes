@@ -29,10 +29,11 @@ public class WindowTransformIO : MonoBehaviour
 
     public void Load()
     {
-        Debug.Log(UnityEngine.Application.persistentDataPath);
+        Debug.Log(Path.Combine(UnityEngine.Application.persistentDataPath, FolderName));
+
         for (int i = 0; i < windowSizes.Length; i++)
         {
-            string fullPath = Path.Combine(UnityEngine.Application.persistentDataPath, FolderName, $"{FileName}_L{i + 1}{Extension}");
+            string fullPath = Path.Combine(UnityEngine.Application.persistentDataPath, FolderName, $"{FileName}_L{i}{Extension}");
             if (File.Exists(fullPath))
             {
                 string jsonString = File.ReadAllText(fullPath);
@@ -69,7 +70,7 @@ public class WindowTransformIO : MonoBehaviour
             }
             string jsonString = JsonUtility.ToJson(WindowTransformLists[i], true);
 
-            string fullPath = Path.Combine(UnityEngine.Application.persistentDataPath, FolderName, $"{FileName}_L{i + 1}{Extension}");
+            string fullPath = Path.Combine(UnityEngine.Application.persistentDataPath, FolderName, $"{FileName}_L{i}{Extension}");
             if (File.Exists(fullPath))
             {
                 File.WriteAllText(fullPath, jsonString);

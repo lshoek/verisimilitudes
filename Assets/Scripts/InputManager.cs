@@ -55,8 +55,8 @@ public class InputManager : MonoBehaviour
         keyActions.Add(new KeyActionPair(KeyCode.S, () => CalibrationSubjects[subjectIndex].localScale -= new Vector3(0, _DebugDelta, 0), "s: scale obj y down"));
         keyActions.Add(new KeyActionPair(KeyCode.R, () => CalibrationSubjects[subjectIndex].localScale += new Vector3(0, 0, _DebugDelta), "r: scale obj z up"));
         keyActions.Add(new KeyActionPair(KeyCode.F, () => CalibrationSubjects[subjectIndex].localScale -= new Vector3(0, 0, _DebugDelta), "f: scale obj z down"));
-        keyActions.Add(new KeyActionPair(KeyCode.F1, () => windowTransformIO.Save(), "f1: save window transforms"));
-        keyActions.Add(new KeyActionPair(KeyCode.F2, () => windowTransformIO.Load(), "f2: load window transforms"));
+        keyActions.Add(new KeyActionPair(KeyCode.F1, () => windowTransformIO.Save(), "f1: save window transforms", true));
+        keyActions.Add(new KeyActionPair(KeyCode.F2, () => windowTransformIO.Load(), "f2: load window transforms", true));
 
         if (Application.Instance.EnableInputManual)
         {

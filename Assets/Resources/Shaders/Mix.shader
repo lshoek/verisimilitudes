@@ -1,12 +1,10 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-Shader "Custom/Mix" 
+﻿Shader "Custom/Mix" 
 {
     Properties
     {
         _MainTex ("Base (RGB)", 2D) = "white" {}
+        _Layer0 ("Layer0", 2D) = "white" {}
         _Layer1 ("Layer1", 2D) = "white" {}
-        _Layer2 ("Layer2", 2D) = "white" {}
     }
     
     SubShader 
@@ -25,8 +23,8 @@ Shader "Custom/Mix"
 			#include "Extensions.cginc"
 
 			uniform sampler2D _MainTex;	
+			uniform sampler2D _Layer0;
 			uniform sampler2D _Layer1;
-			uniform sampler2D _Layer2;
 
 			struct v2f
 			{
@@ -44,13 +42,11 @@ Shader "Custom/Mix"
 
 			fixed4 FRAG (v2f i) : COLOR
 			{
+				fixed4 l0col = tex2D(_Layer0, i.uv);
 				fixed4 l1col = tex2D(_Layer1, i.uv);
-				fixed4 l2col = tex2D(_Layer2, i.uv);
-				fixed4 l3col = tex2D(_MainTex, i.uv);
+				fixed4 l2col = tex2D(_MainTex, i.uv);
 
-				fixed4 col = lerp(l3col, l2col, l2col.a);
-				col = lerp(col, l1col, l1col.a);
-
+				fixed4 col = clamp(l0col + l1col + l2col, fxd4(0), fxd4(1.0));
 				return col;
 			}
 			ENDCG

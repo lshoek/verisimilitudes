@@ -21,9 +21,9 @@ TagManager:
   - 
   - PostProcessing
   - DontRender
-  - StencilMask-Layer1
-  - StencilMask-Layer2
-  - StencilMask-Layer3
+  - StencilMask_L0
+  - StencilMask_L1
+  - StencilMask_L2
   - 
   - 
   - 
